@@ -1,0 +1,97 @@
+\documentclass{article}
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{fullpage}
+\usepackage{times}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{comment}
+\usepackage{color}
+% \usepackage{minted}
+% \usepackage{appendix}
+\usepackage{subcaption}
+% \usepackage{svg}
+% \usepackage{pdfpages}
+% \usepackage{hyperref}
+
+\newenvironment{code}{\captionsetup{type=listing}}{}
+
+\newcommand{\+}[1]{\ensuremath{\boldsymbol{\rm #1}}}
+
+\DeclareMathOperator{\nullspace}{Null}
+\DeclareMathOperator{\erf}{erf}
+
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\norm}[1]{\lVert  #1 \rVert}
+\newcommand{\parens}[1]{\left( #1 \right)}
+\newcommand{\braces}[1]{\left\{ #1 \right\}}
+\newcommand{\brackets}[1]{\left[ #1 \right]}
+\newcommand{\angles}[1]{\langle #1 \rangle}
+
+\title{APPM 5360, Spring 2023 - Written Homework 7}
+\author{Eappen Nelluvelil; Collaborators: Jack, Bisman, Logan, Tyler, Kal}
+
+\title{APPM 5360, Spring 2023 - Written Homework 7}
+\author{Eappen Nelluvelil; Collaborators: Tyler, Logan, Bisman, Kal, Jack}
+\date{March 17, 2023}
+
+\begin{document}
+	
+	\maketitle
+	
+	\begin{enumerate}
+		\item We are interested in finding the Lagrangian dual of the problem $P'$, where $P'$ is given by
+		\begin{align*}
+			\min_{X, z} & \quad \frac{1}{2} \norm{X - Y}_{F}^{2} \\
+			\text{subject to} & \quad g \parens{z} \leq \tau, \\
+			& \quad L \parens{X} = z.
+		\end{align*}
+		Here, $X \in \mathbb{R}^{n_{1} \times n_{2}}$, $z \in \mathbb{R}^{n_{1} n_{2} \times 2}$, and $L$ is the discrete gradient operator as defined in the problem set.
+		
+		The Lagrangian of $P'$ is given by 
+		\begin{align*}
+			\mathcal{L} \parens{X, z; \, \nu} & = \frac{1}{2} \norm{X - Y}_{F}^{2} + \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{ L \parens{X} - z}}, \\
+			& = \frac{1}{2} \norm{\text{Vec} \parens{X - Y}}_{2}^{2} + \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{ L \parens{X}}} - \angles{ \text{Vec} \parens{\nu}, \text{Vec} \parens{z}}
+		\end{align*}
+		where the operator $\text{Vec} \parens{ \cdot }$ is the operator that vectorizes its input in column-major order.
+		The Lagrangian dual is then given by 
+		\begin{align*}
+			g \parens{\nu} & = \inf_{X, z, g \parens{z} \leq \tau} \parens{ \frac{1}{2} \norm{\text{Vec} \parens{X - Y}}_{2}^{2} + \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{ L \parens{X}}} - \angles{ \text{Vec} \parens{\nu}, \text{Vec} \parens{z}}} \\
+			& = \inf_{X} \parens{ \frac{1}{2} \norm{\text{Vec} \parens{X - Y}}_{2}^{2} + \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{ L \parens{X}}}} + \inf_{z, g \parens{z} \leq \tau} \parens{-\angles{ \text{Vec} \parens{\nu}, \text{Vec} \parens{z}}} \\
+			& = \inf_{X} \parens{ \frac{1}{2} \norm{\text{Vec} \parens{X - Y}}_{2}^{2} + \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{ L \parens{X}}}} - \sup_{z, g \parens{z} \leq \tau} \parens{\angles{ \text{Vec} \parens{\nu}, \text{Vec} \parens{z}}},
+		\end{align*}
+	
+		where we split the infimum of the Lagrangian as the sum of the following:
+		\begin{enumerate}
+			\item the infimum over $X$ of $\frac{1}{2} \norm{\text{Vec} \parens{X - Y}}_{2}^{2} + \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{ L \parens{X}}}$, and
+			\item the negative supremum over $z$ of $\angles{ \text{Vec} \parens{\nu}, \text{Vec} \parens{z}}$ such that $g \parens{z} \leq \tau$.
+		\end{enumerate}
+	
+		We will find first the negative supremum of the second component subject to the constraint that $g \parens{z} \leq \tau$.
+		We note first that 
+		\begin{align*}
+			\abs{\angles{ \text{Vec} \parens{\nu}, \text{Vec} \parens{z}}} \leq \norm{\text{Vec} \parens{\nu}}_{\infty} \norm{\text{Vec} \parens{z}}_{1} 
+		\end{align*}
+		by H\"{o}lder's inequality.
+		To make the above inequality tight, we take $\text{Vec} \parens{z}$ to be such that $\parens{\text{Vec} \parens{z}}_{i} = \tau$, where $i$ is the index such that $\abs{\parens{\text{Vec} \parens{\nu}}_{i}} = \norm{\text{Vec} \parens{\nu}}_{\infty}$, and $\parens{\text{Vec} \parens{z}}_{j} = 0$ if $j \neq i$.
+		Thus,
+		\begin{align*}
+			-\sup_{z, g \parens{z} \leq \tau} \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{z}} = - \tau \norm{\text{Vec} \parens{\nu}}_{\infty}.
+		\end{align*}
+	
+		Next, we will find the infimum over $X$ of  $\frac{1}{2} \norm{\text{Vec} \parens{X - Y}}_{2}^{2} + \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{ L \parens{X}}}$.
+		
+		We note first that $\angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{L \parens{X}}} = \angles{\text{Vec} \parens{L^{*} \parens{\nu}}, \text{Vec} \parens{X}}$, where $L^{*} = L_{h}^{*} + L_{v}^{*}$ (\textbf{Note}: depending on how $L$ is implemented, the dimensions of the explicit representation of $L$ will vary.)
+		
+		We also note that the above function of $X$ is differentiable with respect to $X$, and taking the gradient with respect to $X$ and setting equal to $0$, we get the following:
+		\begin{align*}
+			\text{Vec} \parens{X} - \text{Vec} \parens{Y} + \text{Vec} \parens{L^{*} \parens{\nu}} = 0 & \implies \text{Vec} \parens{X} = \text{Vec} \parens{Y} - \text{Vec} \parens{L^{*} \parens{ \nu}}.
+		\end{align*} 
+		Thus, we have that 
+		\begin{align*}
+			g \parens{ \nu} = \frac{1}{2} \norm{\text{Vec} \parens{ L^{*} \parens{\nu}}}_{2}^{2} + \angles{\text{Vec} \parens{\nu}, \text{Vec} \parens{Y} - \text{Vec} \parens{L^{*} \parens{ \nu}}} - \tau \norm{\text{Vec} \parens{\nu}}_{\infty}.
+		\end{align*}
+		
+	\end{enumerate}
+	
+\end{document}
